@@ -10,7 +10,10 @@ const links = {
     { to: '/admin/drives', label: 'Drives' },
     { to: '/admin/applications', label: 'Applications' }
   ],
-  company: [{ to: '/company/dashboard', label: 'Dashboard' }],
+  company: [
+    { to: '/company/dashboard', label: 'Dashboard' },
+    { to: '/company/drives/new', label: 'New Drive' }
+  ],
   student: [{ to: '/student/dashboard', label: 'Dashboard' }]
 }
 </script>

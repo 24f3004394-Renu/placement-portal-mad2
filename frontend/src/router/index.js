@@ -15,6 +15,10 @@ const routes = [
   { path: '/admin/drives', component: () => import('../views/admin/DrivesView.vue'), meta: { role: 'admin' } },
   { path: '/admin/applications', component: () => import('../views/admin/ApplicationsView.vue'), meta: { role: 'admin' } },
   { path: '/company/dashboard', component: () => import('../views/company/DashboardView.vue'), meta: { role: 'company' } },
+  { path: '/company/drives/new', component: () => import('../views/company/DriveFormView.vue'), meta: { role: 'company' } },
+  { path: '/company/drives/:id/edit', component: () => import('../views/company/DriveFormView.vue'), meta: { role: 'company' } },
+  { path: '/company/drives/:id/applicants', component: () => import('../views/company/ApplicantsView.vue'), meta: { role: 'company' } },
+  { path: '/company/students/:id', component: () => import('../views/company/StudentDetailView.vue'), meta: { role: 'company' } },
   { path: '/student/dashboard', component: () => import('../views/student/DashboardView.vue'), meta: { role: 'student' } }
 ]
 
