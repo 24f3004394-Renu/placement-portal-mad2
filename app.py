@@ -1,0 +1,46 @@
+from datetime import datetime
+import os
+
+from flask import Flask, jsonify
+
+from models import db, Admin, Company, Student, PlacementDrive, Application, Placement, Interview
+from config import Config
+
+
+def create_admin():
+    # satisfy the requirement of a pre-existing admin user in database without registration
+    if not Admin.query.filter_by(username='admin').first():
+        admin = Admin(username='admin')
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+        print("Admin user created")
+
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
+
+    db.init_app(app)
+
+    with app.app_context():
+        db.create_all()
+        create_admin()
+
+    @app.route('/api/health', methods=['GET'])
+    def api_health():
+        return jsonify({
+            "status": "Healthy",
+            "database": "Connected",
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "version": "2.0.0"
+        }), 200
+
+    return app
+
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run(debug=True)
