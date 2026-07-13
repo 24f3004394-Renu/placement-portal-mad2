@@ -2,9 +2,12 @@ from datetime import datetime
 import os
 
 from flask import Flask, jsonify
+from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 from models import db, Admin, Company, Student, PlacementDrive, Application, Placement, Interview
 from config import Config
+from routes.auth import bp as auth_bp
 
 
 def create_admin():
@@ -23,6 +26,10 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads')
 
     db.init_app(app)
+    JWTManager(app)
+    CORS(app)  
+
+    app.register_blueprint(auth_bp)
 
     with app.app_context():
         db.create_all()

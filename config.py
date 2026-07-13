@@ -9,4 +9,4 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024 # maximum file size for uploads (16 MB)
     ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'} # allowed file extensions for uploads
 
-   
+    JWT_SECRET_KEY = 'MAD2PROJECT-JWT-SECRET-KEY-2026-PLACEMENT'
