@@ -6,9 +6,14 @@ const routes = [
   { path: '/login', component: () => import('../views/LoginView.vue') },
   { path: '/register/student', component: () => import('../views/RegisterStudentView.vue') },
   { path: '/register/company', component: () => import('../views/RegisterCompanyView.vue') },
-
+ 
 
   { path: '/admin/dashboard', component: () => import('../views/admin/DashboardView.vue'), meta: { role: 'admin' } },
+  { path: '/admin/companies', component: () => import('../views/admin/CompaniesView.vue'), meta: { role: 'admin' } },
+  { path: '/admin/students', component: () => import('../views/admin/StudentsView.vue'), meta: { role: 'admin' } },
+  { path: '/admin/students/:id', component: () => import('../views/admin/StudentDetailView.vue'), meta: { role: 'admin' } },
+  { path: '/admin/drives', component: () => import('../views/admin/DrivesView.vue'), meta: { role: 'admin' } },
+  { path: '/admin/applications', component: () => import('../views/admin/ApplicationsView.vue'), meta: { role: 'admin' } },
   { path: '/company/dashboard', component: () => import('../views/company/DashboardView.vue'), meta: { role: 'company' } },
   { path: '/student/dashboard', component: () => import('../views/student/DashboardView.vue'), meta: { role: 'student' } }
 ]
