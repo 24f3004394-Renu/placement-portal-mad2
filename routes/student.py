@@ -41,7 +41,8 @@ def dashboard():
     student = get_current_user()
     applications = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
-  
+    # a fresh application is status='applied' and is never a "notification" —
+    # only a status CHANGE away from 'applied' counts as one
     notifications = Application.query.filter_by(student_id=student.id, notified=False)\
         .filter(Application.status != 'applied').all()
     notif_payload = [application_json(a) for a in notifications]
@@ -60,7 +61,8 @@ def dashboard():
 def drives():
     student = get_current_user()
     search = request.args.get('search', '')
-    query = PlacementDrive.query.filter_by(status='approved').join(Company).filter(Company.status == 'approved')
+    query = PlacementDrive.query.filter_by(status='approved').join(Company)\
+        .filter(Company.status == 'approved').filter(Company.is_blacklisted == False)
 
     if search:
         query = query.filter(
@@ -90,15 +92,27 @@ def apply(id):
     student = get_current_user()
     drive = PlacementDrive.query.get_or_404(id)
 
+    if drive.company.is_blacklisted:
+        return jsonify({"error": "This company has been blacklisted."}), 403
     if drive.company.status != 'approved':
         return jsonify({"error": "This company has not been approved."}), 403
     if drive.status != 'approved':
         return jsonify({"error": "This drive is not open for applications."}), 403
     if Application.query.filter_by(student_id=student.id, drive_id=id).first():
         return jsonify({"error": "You have already applied to this drive."}), 409
-    if student.cgpa is not None and drive.min_cgpa is not None and student.cgpa < drive.min_cgpa:
+
+    # profile must be complete before applying at all
+    missing = [f for f in ("cgpa", "resume") if getattr(student, f) is None]
+    if missing:
+        return jsonify({
+            "error": "Please complete your profile (CGPA and resume) before applying.",
+            "missing_fields": missing
+        }), 403
+
+    if drive.min_cgpa is not None and student.cgpa < drive.min_cgpa:
         return jsonify({"error": "Your CGPA does not meet the eligibility criteria for this drive."}), 403
 
+    
     application = Application(student_id=student.id, drive_id=id, status='applied')
     db.session.add(application)
     db.session.commit()
