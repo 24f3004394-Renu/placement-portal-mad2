@@ -19,7 +19,10 @@ const routes = [
   { path: '/company/drives/:id/edit', component: () => import('../views/company/DriveFormView.vue'), meta: { role: 'company' } },
   { path: '/company/drives/:id/applicants', component: () => import('../views/company/ApplicantsView.vue'), meta: { role: 'company' } },
   { path: '/company/students/:id', component: () => import('../views/company/StudentDetailView.vue'), meta: { role: 'company' } },
-  { path: '/student/dashboard', component: () => import('../views/student/DashboardView.vue'), meta: { role: 'student' } }
+  { path: '/student/dashboard', component: () => import('../views/student/DashboardView.vue'), meta: { role: 'student' } },
+  { path: '/student/drives', component: () => import('../views/student/DrivesView.vue'), meta: { role: 'student' } },
+  { path: '/student/drives/:id', component: () => import('../views/student/DriveDetailView.vue'), meta: { role: 'student' } },
+  { path: '/student/profile', component: () => import('../views/student/ProfileView.vue'), meta: { role: 'student' } }
 ]
 
 const router = createRouter({ history: createWebHistory(), routes })

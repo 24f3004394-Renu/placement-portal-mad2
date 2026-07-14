@@ -14,7 +14,11 @@ const links = {
     { to: '/company/dashboard', label: 'Dashboard' },
     { to: '/company/drives/new', label: 'New Drive' }
   ],
-  student: [{ to: '/student/dashboard', label: 'Dashboard' }]
+  student: [
+    { to: '/student/dashboard', label: 'Dashboard' },
+    { to: '/student/drives', label: 'Browse Drives' },
+    { to: '/student/profile', label: 'Profile' }
+  ]
 }
 </script>
 

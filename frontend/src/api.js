@@ -1,13 +1,22 @@
-
+// Thin fetch wrapper: attaches the JWT, parses JSON, throws on error responses.
 import { useAuthStore } from './stores/auth'
 
 async function request(path, { method = 'GET', body } = {}) {
   const auth = useAuthStore()
   const headers = {}
   if (auth.token) headers['Authorization'] = `Bearer ${auth.token}`
-  if (body) headers['Content-Type'] = 'application/json'
 
-  const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined })
+  const isFormData = body instanceof FormData
+  if (body && !isFormData) headers['Content-Type'] = 'application/json'
+  // FormData: no Content-Type header at all — fetch/the browser sets
+  // "multipart/form-data; boundary=..." itself. Setting it manually breaks
+  // the upload because the boundary would be missing.
+
+  const res = await fetch(path, {
+    method,
+    headers,
+    body: isFormData ? body : (body ? JSON.stringify(body) : undefined)
+  })
 
   if (res.status === 401) {
     auth.logout()
