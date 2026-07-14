@@ -35,7 +35,7 @@ def interview_json(i):
 
 
 def validate_drive_fields(data):
-    
+    """Shared validation for create/edit drive. Returns (parsed_dict, error_response_or_None)."""
     min_cgpa = data.get('min_cgpa')
     ctc = data.get('ctc')
     deadline = data.get('deadline')
@@ -89,6 +89,8 @@ def dashboard():
 @role_required('company')
 def create_drive():
     company = get_current_user()
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot create drives."}), 403
     if company.status != 'approved':
         return jsonify({"error": "Your company must be approved by admin before creating a drive."}), 403
 
@@ -125,6 +127,8 @@ def edit_drive(id):
     drive = PlacementDrive.query.get_or_404(id)
     if drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot edit drives."}), 403
 
     data = request.get_json(silent=True) or {}
     parsed, error = validate_drive_fields(data)

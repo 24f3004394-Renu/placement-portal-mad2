@@ -177,7 +177,7 @@ def update_profile():
     db.session.commit()
     return jsonify({"message": "Profile updated successfully."}), 200
 
-
+#-
 @bp.route('/applications/<int:id>/interview', methods=['GET'])
 @role_required('student')
 def view_interviews(id):
