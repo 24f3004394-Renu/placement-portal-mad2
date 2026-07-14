@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from utils import role_required
+from utils import role_required, search_cache_get, search_cache_set, bump_cache_version
 from models import db, Student, Company, PlacementDrive, Application
 
 bp = Blueprint('admin', __name__, url_prefix='/api/admin')
@@ -56,13 +56,19 @@ def dashboard():
 @role_required('admin')
 def companies():
     search = request.args.get('search', '')
+    cached = search_cache_get('companies', search)
+    if cached is not None:
+        return jsonify(cached), 200
+
     query = Company.query
     if search:
         query = query.filter(
             (Company.name.ilike(f'%{search}%')) | (Company.industry.ilike(f'%{search}%'))
         )
     results = query.order_by(Company.created_at.desc()).all()
-    return jsonify([company_json(c) for c in results]), 200
+    payload = [company_json(c) for c in results]
+    search_cache_set('companies', search, payload)
+    return jsonify(payload), 200
 
 
 @bp.route('/companies/<int:id>/approve', methods=['PATCH'])
@@ -73,6 +79,7 @@ def approve_company(id):
         return jsonify({"error": f"Cannot approve {company.name} because they are blacklisted."}), 409
     company.status = 'approved'
     db.session.commit()
+    bump_cache_version('companies')
     return jsonify({"message": f"{company.name} approved.", "company": company_json(company)}), 200
 
 
@@ -82,6 +89,7 @@ def reject_company(id):
     company = Company.query.get_or_404(id)
     company.status = 'rejected'
     db.session.commit()
+    bump_cache_version('companies')
     return jsonify({"message": f"{company.name} rejected.", "company": company_json(company)}), 200
 
 
@@ -91,6 +99,7 @@ def blacklist_company(id):
     company = Company.query.get_or_404(id)
     company.is_blacklisted = not company.is_blacklisted
     db.session.commit()
+    bump_cache_version('companies')
     verb = 'blacklisted' if company.is_blacklisted else 'unblacklisted'
     return jsonify({"message": f"{company.name} {verb}.", "company": company_json(company)}), 200
 
@@ -101,6 +110,10 @@ def blacklist_company(id):
 @role_required('admin')
 def students():
     search = request.args.get('search', '')
+    cached = search_cache_get('students', search)
+    if cached is not None:
+        return jsonify(cached), 200
+
     query = Student.query
     if search:
         query = query.filter(
@@ -110,7 +123,9 @@ def students():
             (Student.id == search if search.isdigit() else False)
         )
     results = query.order_by(Student.id.desc()).all()
-    return jsonify([student_json(s) for s in results]), 200
+    payload = [student_json(s) for s in results]
+    search_cache_set('students', search, payload)
+    return jsonify(payload), 200
 
 
 @bp.route('/students/<int:id>', methods=['GET'])
@@ -130,6 +145,7 @@ def blacklist_student(id):
     student = Student.query.get_or_404(id)
     student.is_blacklisted = not student.is_blacklisted
     db.session.commit()
+    bump_cache_version('students')
     verb = 'blacklisted' if student.is_blacklisted else 'unblacklisted'
     return jsonify({"message": f"{student.name} {verb}.", "student": student_json(student)}), 200
 

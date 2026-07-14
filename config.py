@@ -17,3 +17,7 @@ class Config:
     SMTP_HOST = 'localhost'
     SMTP_PORT = 1025
     MAIL_FROM = 'placement-portal@localhost'
+
+    CACHE_TYPE = 'RedisCache'
+    CACHE_REDIS_URL = 'redis://localhost:6379/0' 
+    CACHE_DEFAULT_TIMEOUT = 60

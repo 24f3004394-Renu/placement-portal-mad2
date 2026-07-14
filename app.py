@@ -5,6 +5,7 @@ from celery import Celery
 
 from models import db, Admin
 from config import Config
+from extensions import cache, celery
 from routes.auth import bp as auth_bp
 from routes.admin import bp as admin_bp
 from routes.company import bp as company_bp
@@ -45,6 +46,8 @@ def create_app():
     JWTManager(app)
     CORS(app) 
     make_celery(app)
+    cache.init_app(app)
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
