@@ -10,3 +10,10 @@ class Config:
     ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'} # allowed file extensions for uploads
 
     JWT_SECRET_KEY = 'MAD2PROJECT-JWT-SECRET-KEY-2026-PLACEMENT'
+
+    CELERY_BROKER_URL = 'redis://localhost:6379/1'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+
+    SMTP_HOST = 'localhost'
+    SMTP_PORT = 1025
+    MAIL_FROM = 'placement-portal@localhost'

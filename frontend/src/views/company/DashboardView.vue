@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { api } from '../../api'
 import AlertMessage from '../../components/AlertMessage.vue'
+import ExportCsvButton from '../../components/ExportCsvButton.vue'
 
 const drives = ref([])
 const totalApplications = ref(0)
@@ -33,7 +34,10 @@ onMounted(load)
 <template>
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Company Dashboard</h2>
-    <span class="badge text-bg-primary fs-6">Total applications: {{ totalApplications }}</span>
+    <span>
+      <span class="badge text-bg-primary fs-6 me-2">Total applications: {{ totalApplications }}</span>
+      <ExportCsvButton base="/api/company" />
+    </span>
   </div>
   <div v-if="companyStatus === 'pending'" class="alert alert-warning">
     Your company is pending admin approval. You can't create drives until approved.

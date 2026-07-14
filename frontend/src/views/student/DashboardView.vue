@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { api } from '../../api'
 import { useAuthStore } from '../../stores/auth'
 import AlertMessage from '../../components/AlertMessage.vue'
+import ExportCsvButton from '../../components/ExportCsvButton.vue'
 
 const auth = useAuthStore()
 const applications = ref([])
@@ -47,7 +48,10 @@ onMounted(load)
 </script>
 
 <template>
-  <h2 class="mb-4">My Applications</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Applications</h2>
+    <ExportCsvButton base="/api/student" />
+  </div>
   <AlertMessage :message="error" />
 
   <div v-if="notifications.length" class="alert alert-info">

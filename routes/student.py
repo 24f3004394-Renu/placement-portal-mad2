@@ -41,8 +41,7 @@ def dashboard():
     student = get_current_user()
     applications = Application.query.filter_by(student_id=student.id).order_by(Application.applied_at.desc()).all()
 
-    # a fresh application is status='applied' and is never a "notification" —
-    # only a status CHANGE away from 'applied' counts as one
+   
     notifications = Application.query.filter_by(student_id=student.id, notified=False)\
         .filter(Application.status != 'applied').all()
     notif_payload = [application_json(a) for a in notifications]
@@ -101,7 +100,7 @@ def apply(id):
     if Application.query.filter_by(student_id=student.id, drive_id=id).first():
         return jsonify({"error": "You have already applied to this drive."}), 409
 
-    # profile must be complete before applying at all
+   
     missing = [f for f in ("cgpa", "resume") if getattr(student, f) is None]
     if missing:
         return jsonify({
@@ -177,7 +176,7 @@ def update_profile():
     db.session.commit()
     return jsonify({"message": "Profile updated successfully."}), 200
 
-#-
+
 @bp.route('/applications/<int:id>/interview', methods=['GET'])
 @role_required('student')
 def view_interviews(id):
@@ -204,3 +203,26 @@ def offer_letter(id):
     drive = PlacementDrive.query.get(placement.drive_id)
     company = Company.query.get(placement.company_id)
     return render_template('offer_letter.html', student=student, company=company, drive=drive, placement=placement), 200
+
+
+# CSV EXPORT (triggered async job)
+
+@bp.route('/export', methods=['POST'])
+@role_required('student')
+def trigger_export():
+    from tasks import export_applications_csv
+    student = get_current_user()
+    task = export_applications_csv.delay('student', student.id)
+    return jsonify({"task_id": task.id, "message": "Export started."}), 202
+
+
+@bp.route('/export/status/<task_id>', methods=['GET'])
+@role_required('student')
+def export_status(task_id):
+    from tasks import export_applications_csv
+    result = export_applications_csv.AsyncResult(task_id)
+    payload = {"task_id": task_id, "state": result.state}
+    if result.state == 'SUCCESS':
+        payload["file"] = result.result["file"]
+        payload["row_count"] = result.result["row_count"]
+    return jsonify(payload), 200

@@ -275,3 +275,26 @@ def view_student(id):
         "id": student.id, "name": student.name, "email": student.email,
         "branch": student.branch, "cgpa": student.cgpa
     }), 200
+
+
+# CSV EXPORT (triggered async job)
+
+@bp.route('/export', methods=['POST'])
+@role_required('company')
+def trigger_export():
+    from tasks import export_applications_csv
+    company = get_current_user()
+    task = export_applications_csv.delay('company', company.id)
+    return jsonify({"task_id": task.id, "message": "Export started."}), 202
+
+
+@bp.route('/export/status/<task_id>', methods=['GET'])
+@role_required('company')
+def export_status(task_id):
+    from tasks import export_applications_csv
+    result = export_applications_csv.AsyncResult(task_id)
+    payload = {"task_id": task_id, "state": result.state}
+    if result.state == 'SUCCESS':
+        payload["file"] = result.result["file"]
+        payload["row_count"] = result.result["row_count"]
+    return jsonify(payload), 200
