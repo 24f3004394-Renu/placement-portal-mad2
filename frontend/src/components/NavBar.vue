@@ -11,8 +11,9 @@ const links = {
     { to: '/admin/applications', label: 'Applications' }
   ],
   company: [
-    { to: '/company/dashboard', label: 'Dashboard' },
-    { to: '/company/drives/new', label: 'New Drive' }
+  { to: '/company/dashboard', label: 'Dashboard' },
+  { to: '/company/drives/new', label: 'New Drive' },
+  { to: '/company/profile', label: 'Profile' }
   ],
   student: [
     { to: '/student/dashboard', label: 'Dashboard' },

@@ -86,6 +86,37 @@ def dashboard():
         "total_applications": total_applications
     }), 200
 
+#PROFILE
+
+@bp.route('/profile', methods=['GET'])
+@role_required('company')
+def get_profile():
+    c = get_current_user()
+    return jsonify({
+        "id": c.id, "name": c.name, "email": c.email, "hr_contact": c.hr_contact,
+        "website": c.website, "industry": c.industry, "description": c.description,
+        "status": c.status
+    }), 200
+
+
+@bp.route('/profile', methods=['PUT'])
+@role_required('company')
+def update_profile():
+    company = get_current_user()
+    data = request.get_json(silent=True) or {}
+
+    hr_contact = data.get('hr_contact')
+    if not hr_contact:
+        return jsonify({"error": "HR contact is required."}), 400
+
+    company.hr_contact = hr_contact
+    company.website = data.get('website')
+    company.industry = data.get('industry')
+    company.description = data.get('description')
+    db.session.commit()
+    return jsonify({"message": "Profile updated successfully."}), 200
+
+
 # DRIVES (create only allowed if company is approved)
 
 @bp.route('/drives', methods=['POST'])
