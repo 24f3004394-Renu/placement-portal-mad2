@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { api } from '../../api'
+import { api, API_BASE } from '../../api'
 
 const route = useRoute()
 const student = ref(null)
@@ -19,8 +19,17 @@ onMounted(async () => {
     <h2 class="mb-3">{{ student.name }}</h2>
     <dl class="row">
       <dt class="col-sm-3">Email</dt><dd class="col-sm-9">{{ student.email }}</dd>
+      <dt class="col-sm-3">Phone</dt><dd class="col-sm-9">{{ student.phone || '—' }}</dd>
       <dt class="col-sm-3">Branch</dt><dd class="col-sm-9">{{ student.branch || '—' }}</dd>
+      <dt class="col-sm-3">Degree</dt><dd class="col-sm-9">{{ student.degree || '—' }}</dd>
       <dt class="col-sm-3">CGPA</dt><dd class="col-sm-9">{{ student.cgpa ?? '—' }}</dd>
+      <dt class="col-sm-3">Graduation Year</dt><dd class="col-sm-9">{{ student.grad_year ?? '—' }}</dd>
+      <dt class="col-sm-3">Skills</dt><dd class="col-sm-9">{{ student.skills || '—' }}</dd>
+      <dt class="col-sm-3">Resume</dt>
+      <dd class="col-sm-9">
+        <span v-if="student.resume"><a :href="API_BASE + student.resume" target="_blank">View</a></span>
+        <span v-else>—</span>
+      </dd>
     </dl>
   </div>
 </template>

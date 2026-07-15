@@ -321,7 +321,9 @@ def view_student(id):
     student = Student.query.get_or_404(id)
     return jsonify({
         "id": student.id, "name": student.name, "email": student.email,
-        "branch": student.branch, "cgpa": student.cgpa
+        "phone": student.phone, "degree": student.degree, "branch": student.branch,
+        "cgpa": student.cgpa, "grad_year": student.grad_year,
+        "skills": student.skills, "resume": student.resume
     }), 200
 
 
