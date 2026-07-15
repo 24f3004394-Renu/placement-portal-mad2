@@ -1,0 +1,40 @@
+:root {
+  --bs-primary: #B05020;
+  --bs-primary-rgb: 176, 80, 32;
+  --bs-body-bg: #F5EDE0;
+  --bs-body-color: #100A04;
+  --bs-border-color: #D0B090;
+}
+
+body {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.card {
+  background-color: #FFF6EC;
+  border: 1px solid #D0B090;
+  box-shadow: 0 1px 3px rgba(16, 10, 4, 0.06);
+}
+
+.btn-primary {
+  background-color: #B05020;
+  border-color: #B05020;
+}
+.btn-primary:hover {
+  background-color: #7A3010;
+  border-color: #7A3010;
+}
+
+.form-control:focus {
+  border-color: #B05020;
+  box-shadow: 0 0 0 3px rgba(176, 80, 32, 0.12);
+}
+
+.text-muted { color: #504030 !important; }
+
+
+.badge-pending    { background-color: #D07840; color: #FFF6EC; }
+.badge-rejected   { background-color: #4A1E00; color: #F0C090; }
+.badge-approved   { background-color: #5C7A5C; color: #FFF6EC; }
+.badge-blacklisted{ background-color: #302010; color: #D0B090; }

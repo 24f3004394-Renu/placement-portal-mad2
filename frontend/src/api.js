@@ -1,5 +1,6 @@
 // Thin fetch wrapper: attaches the JWT, parses JSON, throws on error responses.
 import { useAuthStore } from './stores/auth'
+export const API_BASE = 'http://localhost:5000'
 
 async function request(path, { method = 'GET', body } = {}) {
   const auth = useAuthStore()

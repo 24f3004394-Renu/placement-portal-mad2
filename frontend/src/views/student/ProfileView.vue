@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { api } from '../../api'
+import { api, API_BASE } from '../../api'
 import AlertMessage from '../../components/AlertMessage.vue'
 
 const form = ref({ name: '', phone: '', degree: '', branch: '', cgpa: '', grad_year: '', skills: '' })
@@ -53,7 +53,7 @@ async function submit() {
           <div class="col-12 mb-3">
             <label class="form-label">Resume (PDF)</label>
             <input type="file" accept=".pdf" class="form-control" @change="e => resume = e.target.files[0]">
-            <small v-if="currentResume" class="text-muted">Current: <a :href="'/' + currentResume" target="_blank">view</a></small>
+            <small v-if="currentResume" class="text-muted">Current: <a :href="API_BASE + currentResume" target="_blank">view</a></small>
           </div>
         </div>
         <button class="btn btn-primary">Save Profile</button>
