@@ -92,6 +92,7 @@ def dashboard():
 @role_required('company')
 def get_profile():
     c = get_current_user()
+    
     return jsonify({
         "id": c.id, "name": c.name, "email": c.email, "hr_contact": c.hr_contact,
         "website": c.website, "industry": c.industry, "description": c.description,
@@ -102,10 +103,13 @@ def get_profile():
 @bp.route('/profile', methods=['PUT'])
 @role_required('company')
 def update_profile():
+
+    
     company = get_current_user()
     data = request.get_json(silent=True) or {}
-
     hr_contact = data.get('hr_contact')
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted."}), 403
     if not hr_contact:
         return jsonify({"error": "HR contact is required."}), 400
 
@@ -190,6 +194,8 @@ def close_drive(id):
     drive = PlacementDrive.query.get_or_404(id)
     if drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot create drives."}), 403
     drive.status = 'closed'
     db.session.commit()
     return jsonify({"message": "Drive closed.", "drive": drive_json(drive)}), 200
@@ -202,6 +208,8 @@ def view_applicants(id):
     drive = PlacementDrive.query.get_or_404(id)
     if drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot create drives."}), 403
     applications = Application.query.filter_by(drive_id=id).all()
     return jsonify({
         "drive": drive_json(drive),
@@ -216,6 +224,8 @@ def update_applicant(id):
     application = Application.query.get_or_404(id)
     if application.placement_drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot create drives."}), 403
 
     data = request.get_json(silent=True) or {}
     new_status = data.get('status')
@@ -249,6 +259,8 @@ def schedule_interview(id):
     application = Application.query.get_or_404(id)
     if application.placement_drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot schedule interviews."}), 403
 
     data = request.get_json(silent=True) or {}
     scheduled_at = data.get('scheduled_at')
@@ -276,6 +288,8 @@ def schedule_interview(id):
 def list_interviews(id):
     company = get_current_user()
     application = Application.query.get_or_404(id)
+    if company.is_blacklisted:
+        return jsonify({"error": "Your company has been blacklisted and cannot create drives."}), 403
     if application.placement_drive.company_id != company.id:
         return jsonify({"error": "Unauthorized access."}), 403
     interviews = Interview.query.filter_by(application_id=id).order_by(Interview.scheduled_at.asc()).all()
@@ -316,7 +330,7 @@ def view_student(id):
 @bp.route('/export', methods=['POST'])
 @role_required('company')
 def trigger_export():
-    from backend.tasks import export_applications_csv
+    from tasks import export_applications_csv
     company = get_current_user()
     task = export_applications_csv.delay('company', company.id)
     return jsonify({"task_id": task.id, "message": "Export started."}), 202
@@ -325,7 +339,7 @@ def trigger_export():
 @bp.route('/export/status/<task_id>', methods=['GET'])
 @role_required('company')
 def export_status(task_id):
-    from backend.tasks import export_applications_csv
+    from tasks import export_applications_csv
     result = export_applications_csv.AsyncResult(task_id)
     payload = {"task_id": task_id, "state": result.state}
     if result.state == 'SUCCESS':

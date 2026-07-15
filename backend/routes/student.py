@@ -171,7 +171,7 @@ def update_profile():
         upload_folder = current_app.config.get('UPLOAD_FOLDER', 'static/uploads')
         os.makedirs(upload_folder, exist_ok=True)
         resume.save(os.path.join(upload_folder, filename))
-        student.resume = f"static/uploads/{filename}"
+        student.resume = f"/static/uploads/{filename}"
 
     db.session.commit()
     return jsonify({"message": "Profile updated successfully."}), 200
@@ -210,7 +210,7 @@ def offer_letter(id):
 @bp.route('/export', methods=['POST'])
 @role_required('student')
 def trigger_export():
-    from backend.tasks import export_applications_csv
+    from tasks import export_applications_csv
     student = get_current_user()
     task = export_applications_csv.delay('student', student.id)
     return jsonify({"task_id": task.id, "message": "Export started."}), 202
@@ -219,7 +219,7 @@ def trigger_export():
 @bp.route('/export/status/<task_id>', methods=['GET'])
 @role_required('student')
 def export_status(task_id):
-    from backend.tasks import export_applications_csv
+    from tasks import export_applications_csv
     result = export_applications_csv.AsyncResult(task_id)
     payload = {"task_id": task_id, "state": result.state}
     if result.state == 'SUCCESS':
