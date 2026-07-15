@@ -7,8 +7,8 @@ from email.message import EmailMessage
 
 from celery.schedules import crontab
 
-from app import app, celery
-from models import db, Student, Company, PlacementDrive, Application, Placement, Interview
+from backend.app import app, celery
+from backend.models import db, Student, Company, PlacementDrive, Application, Placement, Interview
 
 EXPORT_FOLDER = os.path.join(app.root_path, 'static', 'exports')
 

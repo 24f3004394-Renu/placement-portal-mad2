@@ -19,14 +19,14 @@ def role_required(role):
 
 def get_current_user():
     
-    from models import Admin, Company, Student
+    from backend.models import Admin, Company, Student
     role = get_jwt().get('role')
     uid = int(get_jwt_identity())
     model = {'admin': Admin, 'company': Company, 'student': Student}.get(role)
     return model.query.get(uid) if model else None
 
 def _cache():
-    from extensions import cache
+    from backend.extensions import cache
     return cache
 
 

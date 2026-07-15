@@ -4,3 +4,11 @@ frontend/dist/
 __pycache__/
 node_modules/
 instance/*.db
+
+backend/venv/
+backend/instance/*.db
+backend/static/uploads/*
+backend/static/exports/*
+backend/__pycache__/
+frontend/node_modules/
+frontend/dist/
